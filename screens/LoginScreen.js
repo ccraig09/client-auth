@@ -7,20 +7,32 @@ import {
 	TextInput,
 	Image,
 	TouchableOpacity,
+	Platform,
 } from "react-native";
 import React from "react";
 import { Formik } from "formik";
+import * as yup from "yup";
 
-const LoginScreen = () => {
+const formSchema = yup.object({
+	email: yup.string().email().required(),
+	password: yup.string().required().min(6),
+});
+
+const LoginScreen = (navData) => {
 	return (
-		<KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+		<KeyboardAvoidingView
+			behavior={Platform.OS === "ios" ? "padding" : "height"}
+			style={{ flex: 1 }}
+		>
 			<Formik
 				initialValues={{
 					email: "",
 					password: "",
 				}}
+				validationSchema={formSchema}
 				onSubmit={(values) => {
 					console.log(values);
+					navData.navigation.navigate("Home");
 				}}
 			>
 				{(props) => (
@@ -37,21 +49,41 @@ const LoginScreen = () => {
 								placeholder="Email"
 								placeholderTextColor={"#fff"}
 								keyboardType="email-address"
+								onChangeText={props.handleChange("email")}
+								value={props.values.email}
+								onBlur={props.handleBlur("email")}
 							/>
+							<Text style={styles.error}>
+								{props.touched.email && props.errors.email}
+							</Text>
 							<TextInput
 								style={styles.input}
 								placeholder="Password"
 								placeholderTextColor={"#fff"}
 								secureTextEntry={true}
+								onChangeText={props.handleChange("password")}
+								value={props.values.password}
+								onBlur={props.handleBlur("password")}
 							/>
-							<TouchableOpacity style={styles.button}>
+							<Text style={styles.error}>
+								{props.touched.password &&
+									props.errors.password}
+							</Text>
+							<TouchableOpacity
+								style={styles.button}
+								onPress={props.handleSubmit}
+							>
 								<Text style={styles.buttonText}>Login</Text>
 							</TouchableOpacity>
 							<View style={styles.registerContainer}>
 								<Text style={styles.registerText}>
 									Dont have account?
 								</Text>
-								<TouchableOpacity>
+								<TouchableOpacity
+									onPress={() =>
+										navData.navigation.navigate("Register")
+									}
+								>
 									<Text style={styles.registerButton}>
 										Register
 									</Text>
