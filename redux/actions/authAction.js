@@ -22,17 +22,44 @@ export const registerUser = (authData) => {
 		});
 
 		const resultData = await result.json();
-		console.log(resultData);
 
-		dispatch({ type: REGISTER_USER_SUCCESS, payload: 1 });
+		if (resultData.success) {
+			dispatch({ type: REGISTER_USER_SUCCESS, payload: resultData });
+		} else {
+			dispatch({ type: REGISTER_USER_FAIL });
+		}
+
+		return resultData;
 	};
 };
 
 export const loginUser = (authData) => {
 	const { email, password } = authData;
 
-	// logic to make a post request to LOGIN the user
 	return async (dispatch) => {
-		dispatch({ type: LOGIN_USER_SUCCESS, payload: 1 });
+		// logic to make a post request to LOGIN the user
+		const result = await fetch(`${BASE_URL}/api/users/login`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				email,
+				password,
+			}),
+		});
+
+		const resultData = await result.json();
+		console.log(resultData);
+
+		if (resultData.success) {
+			dispatch({ type: LOGIN_USER_SUCCESS, payload: resultData });
+		} else {
+			dispatch({ type: LOGIN_USER_FAIL });
+		}
+
+		// add return  to return result data and access
+		// from the .then() from the onSubmit()
+		return resultData;
 	};
 };

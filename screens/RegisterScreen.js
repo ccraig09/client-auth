@@ -9,6 +9,7 @@ import {
 	TouchableOpacity,
 	Image,
 	Platform,
+	Alert,
 } from "react-native";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -38,8 +39,12 @@ const RegisterScreen = (navData) => {
 				validationSchema={formSchema}
 				onSubmit={(values) => {
 					dispatch(authAction.registerUser(values))
-						.then(() => {
-							navData.navigation.navigate("Home");
+						.then((result) => {
+							if (result.success) {
+								navData.navigation.navigate("Home");
+							} else {
+								Alert.alert("Registration Failed. Try Again");
+							}
 						})
 						.catch((err) => console.log(err));
 				}}
